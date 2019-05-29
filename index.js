@@ -94,17 +94,36 @@ async function train_model() {
 //funcao basica de teste
 function testar(n) {
   //pega o vetor de pixels (784) de um digito n
-  const test_mnist = mnist[n].get()
+  const test_mnist_arr = mnist[n].get()
 
   //transforma o vetor num Tensor
-  const tensor_test = tf.tensor2d([test_mnist])
+  const tensor_test = tf.tensor2d([test_mnist_arr])
 
   //rede neural atua
   const result = model.predict(tensor_test)
 
   //retorna um resultado (ex: [0.001, 0.003232, 0.00091, 0.9889, 0.0001, 0, 0, 0.0982, 0.001])
+  //
   //nesse caso o digito é o 3
-  result.print()
+
+  //transformando resultado em tensor para vetor
+  const result_arr = Array.from(result.dataSync())
+
+  //normalizando a resposta entre zeros e uns
+  result_arr.map((element, index) => {
+    if(element < 0.5) {
+      result_arr[index] = 0
+    } else {
+      result_arr[index] = 1
+    }
+  })
+
+  //pegando o index do maior valor, ou seja, a resposta
+  const answer = result_arr.indexOf(1)
+  console.log('> O numero para teste eh: ', n)
+  console.log('> A previsao do numero eh : ', answer)
+  console.log('> Vetor resultado: ', result_arr)
+
   console.log('> Teste finalizado!')
 
   //limpa a memoria
